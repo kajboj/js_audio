@@ -1,4 +1,9 @@
 import Wad from 'web-audio-daw';
 
-var saw = new Wad({source : 'sawtooth'})
-saw.play()
+var sine = new Wad({
+  source : 'sine',
+  volume: 0.5
+})
+sine.play({pitch: 'C5'})
+sine.play({pitch: 'E5'})
+sine.play({pitch: 'G5'})
