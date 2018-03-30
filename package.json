@@ -1,0 +1,22 @@
+{
+  "name": "wad_test",
+  "version": "1.0.0",
+  "description": "",
+  "watch": {
+    "wp": "src/*.js"
+  },
+  "scripts": {
+    "wp": "webpack --mode development --config webpack.config.js",
+    "watch": "npm-watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "web-audio-daw": "^3.0.0"
+  },
+  "devDependencies": {
+    "npm-watch": "^0.3.0",
+    "webpack": "^4.4.1",
+    "webpack-cli": "^2.0.13"
+  }
+}
