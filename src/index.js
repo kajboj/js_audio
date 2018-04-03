@@ -17,14 +17,14 @@ const playTone = (scaleTone) => every(500, [
 ])()
 
 
-function Tone({tone, chosen}) {
+function Tone({name, chosen}) {
   return (
-    <button onClick={chosen}>{tone}</button>
+    <button onClick={chosen}>{name}</button>
   );
 }
 
 function TonePicker({tones, chosen}) {
-  return tones.map((tone) => <Tone tone={tone} key={tone} chosen={() => chosen(tone)}/>)
+  return tones.map((tone, index) => <Tone name={index+1} key={tone} chosen={() => chosen(tone)}/>)
 }
 
 class Lesson extends React.Component {
@@ -78,6 +78,6 @@ class Lesson extends React.Component {
 }
 
 ReactDOM.render(
-  <Lesson playTone={playTone} tones={[0, 2, 4]}/>,
+  <Lesson playTone={playTone} tones={[0, 2, 4, 5, 7, 9, 11]}/>,
   document.getElementById('root')
 )
