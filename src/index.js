@@ -1,14 +1,21 @@
 import Wad from 'web-audio-daw'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {toName, toNumber} from './notes'
+import {toNumber} from './notes'
 import instrument from './instrument'
 import every from './timing'
 import {addRoot, majorTriad} from './chording'
+import random from 'lodash/random'
 
-const cadence = addRoot(toNumber('C4'), [0, 5, 7, 0]).map((root) => majorTriad(instrument, root))
-var playCadence = every(500, cadence)
-var playTone = (toneNumber) => instrument.play(toneNumber)
+const root = toNumber('C4')
+
+const cadence = addRoot(root, [0, 5, 7, 0]).map((root) => majorTriad(instrument, root))
+const playTone = (scaleTone) => every(500, [
+  ...cadence,
+  () => {},
+  () => instrument(root + scaleTone)
+])()
+
 
 function Tone({tone, chosen}) {
   return (
@@ -21,60 +28,56 @@ function TonePicker({tones, chosen}) {
 }
 
 class Lesson extends React.Component {
-  constructor(props) {
+  constructor({tones, playTone}) {
     super()
-    this.state = {}
-  }
-
-  componentDidMount() {
-  }
-
-  generateTone() {
-    this.props.tones[1]
-  }
-
-  startRound() {
-    const tone = generateTone()
-    this.props.playTone(tone)
-    this.setState({
-      tone: tone
-    })
-  }
-
-  isCorrect(guessedTone) {
-    return guessedTone === this.state.tone
-  }
-
-  guess(tone) {
-    if (isCorrect(tone)) {
-      this.props.resolution()
-      this.startRound()
-    } else {
-      this.setState({
-        wrong: true
-      })
+    this.tones = tones
+    this.playTone = playTone
+    this.state = {
+      questionsLeft: 5,
+      correct: 0,
+      incorrect: 0
     }
   }
 
-  giveUp() {
+  componentDidMount() {
+    this.nextQuestion()
+  }
+
+  nextQuestion() {
+    const tone = this.tones[random(this.tones.length-1)]
+    this.playTone(tone)
+    this.setState({
+      tone,
+      answered: false,
+      questionsLeft: this.state.questionsLeft-1,
+    })
+  }
+
+  answer(tone) {
+    if (tone === this.state.tone) {
+      if (!this.state.answered) {
+        this.setState({correct: this.state.correct+1})
+      }
+      this.nextQuestion()
+      console.log('correct')
+    } else {
+      if (!this.state.answered) {
+        this.setState({incorrect: this.state.incorrect+1})
+      }
+      console.log('wrong')
+    }
+
+    this.setState({answered: true})
   }
 
   render() {
-    return <TonePicker tones={this.props.tones} chosen={(tone) => console.log(tone)}/>
+    return <div>
+      <TonePicker tones={this.props.tones} chosen={(tone) => this.answer(tone)}/>
+    </div>
   }
 }
 
-// cadence
-// guess
-// if (correct)
-//   resolution
-// else
-//   wrong = true
-//   wait for input (give up, cadence, etc.)
-
 ReactDOM.render(
-  <Lesson playCadence={playCadence} playTone={playTone} tones={[1, 2, 3]}/>,
+  <Lesson playTone={playTone} tones={[0, 2, 4]}/>,
   document.getElementById('root')
 )
-
-playCadence().then(() => console.log('done'))
